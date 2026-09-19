@@ -57,7 +57,7 @@ class Drone {
 }
 
 //CLASS FOR TREES
-class Trees{
+class Tree{
 
     constructor(x, y, radius, color="green"){
 
@@ -78,3 +78,121 @@ class Trees{
     }
 
 }
+
+//CLASS FOR Birds
+
+class Bird {
+    constructor(x, y,radius=5, color="yellow"){
+        this.x = x;
+        this.y = y;
+        this.radius = radius;
+        this.color = color;
+
+        this.velocity = 2;
+    }
+
+    drawBird(){
+        ctx.fillstyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fill();
+    }
+}
+
+//CLASS FOR DustParticles
+class Dust{
+    constructor(x, y,){
+        this.x = x;
+        this.y = y;
+
+        this.radius = 2;
+        this.color = "grey";
+
+        this.life = 30;
+    }
+
+    update() {
+        this.y += 1;
+        this.life --;
+    }
+
+    drawDust(){
+        ctx.fillstyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fill();
+    }
+}
+
+//let trees = [];
+
+//CREATING OBJECTS
+let drone = new Drone(200, 200);
+
+//Trees array creating 3 trees for now
+let trees = [
+    new Tree(100, 100),
+    new Tree(400, 250),
+    new Tree(600, 150)
+];
+
+//BIRDS ARRAY 
+let birds = [
+    new Bird(50, 80),
+    new Bird(300, 120)
+];
+
+//DUST PARTICLES ARRAY
+let dustParticles = [];
+
+for (let index = 0; index < 50; index++) {
+    const dustParticle = new Dust(Math.random()*canvas.width, Math.random()*canvas.height);
+    dustParticles.push(dustParticle);
+}
+
+
+//DRONE COLLISSION AGAIN BIRDS AND TREES
+function checkCollision(drone, tree){
+    let distanceX = drone.x - tree.x;
+    let distanceY = drone.y - tree.y;
+
+    let distance = Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
+    return distance <= tree.radius + drone.width
+}
+
+//ANIMATE FUNCTION
+function animate(){
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    drone.moveDrone();
+    drone.drawDrone();
+
+    //Collision check with trees
+trees.forEach(tree => {
+    tree.drawTree();
+    if(checkCollision(drone, tree)) {
+        //when drone collides with a tree it must stop
+
+        //and it must reduce the battery
+
+        //and show that a tree has been hit
+    }
+});
+
+//Collision check with birds
+birds.forEach(bird => {
+    bird.drawBird();
+    if(checkCollision(drone, bird)) {
+        //when drone collides with a tree it must stop
+
+        //and it must reduce the battery
+
+        //and show that a tree has been hit
+    }
+});
+
+requestAnimationFrame(animate);
+
+}
+
+requestAnimationFrame(animate);
