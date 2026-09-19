@@ -55,3 +55,26 @@ class Drone {
     }
 
 }
+
+//CLASS FOR TREES
+class Trees{
+
+    constructor(x, y, radius, color="green"){
+
+        this.x = x;
+        this.y = y;
+        this.radius = radius;
+        this.color = color;
+    }
+
+    //METHOD TO DRAW A TREE
+    drawTree(){
+        
+        ctx.fillstyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fill();
+
+    }
+
+}
