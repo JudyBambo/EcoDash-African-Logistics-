@@ -4,6 +4,8 @@ canvas.height = 2000;
 
 let ctx = canvas.getContext("2d");
 
+let score = 0;
+
 //DRONE CLASS
 class Drone {
     //CONSTRUCTOR
@@ -18,13 +20,15 @@ class Drone {
         this.velocityX = 1;
         this.velocityY = 0;
         this.acceleration = 0.1;
+        this.hasSupplies = false;
+        this.battery = 100;
     }
 
     //METHOD TO DRAW A DRONE
     drawDrone (){
         ctx.beginPath();
-        ctx.fillstyle = this.color;
-        ctx.fillrect(this.x, this.y, this.width, this.height);
+        ctx.fillStyle = this.color;
+        ctx.fillRect(this.x, this.y, this.width, this.height);
         ctx.fill();
     }
 
@@ -52,8 +56,15 @@ class Drone {
             this.velocityY = 0;
         }
 
-    }
+        //drain the drone's battery as it moves
+        this.battery -= 0.02;
 
+        //check if battery is empty
+        if(this.battery <= 0){
+            this.battery = 0;
+            //and end the game
+        }
+    }
 }
 
 //DELIVERY POINTS (VILLAGES CLINICS) CLASS
@@ -70,16 +81,16 @@ class Clinic{
 
     //DRAW THE CLINICS
     drawClinic(){
-        ctx.fillstyle = this.deliveryCompleted ? "gray" : "red";
+        ctx.fillStyle = this.deliveryCompleted ? "gray" : "red";
         ctx.beginPath();
-        ctx.arc(this.x, this.y,this.radius, 0, Math.PI*2);
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2);
         ctx.fill();
     }
 }
 
 //SUPPLIES PICKUP LOCATION
 class Depot{
-    contructor(x, y){
+    constructor(x, y){
         this.x = x;
         this.y = y;
 
@@ -89,8 +100,32 @@ class Depot{
 
     drawDepot(){
         ctx.beginPath();
-        ctx.fillstyle = "brown";
+        ctx.fillStyle = "brown";
         ctx.rect(this.x, this.y, this.width, this.height);
+        ctx.fill();
+    }
+}
+
+//SOLOAR STATION CLASS
+class SolarStation {
+    constructor(x, y){
+        this.x = x;
+        this.y = y;
+
+        this.radius = 30;
+    }
+
+    drawSolarStation(){
+        ctx.fillStyle = "blue";
+        ctx.fillRect(this.x - 25, this.y - 15, 50, 30);
+
+        //Charging symbol
+        ctx.beginPath();
+        ctx.moveTo(this.x - 5, this.y - 10);
+        ctx.lineTo(this.x + 5, this.y - 10);
+        ctx.lineTo(this.x, this.y);
+        ctx.lineTo(this.x + 8, this.y);
+        ctx.lineTo(this.x - 5, this.y + 12);
         ctx.fill();
     }
 }
@@ -106,12 +141,11 @@ class Tree{
 
     //METHOD TO DRAW A TREE
     drawTree(){
-        ctx.fillstyle = this.color;
+        ctx.fillStyle = this.color;
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
         ctx.fill();
     }
-
 }
 
 //CLASS FOR Birds
@@ -126,7 +160,7 @@ class Bird {
     }
 
     drawBird(){
-        ctx.fillstyle = this.color;
+        ctx.fillStyle = this.color;
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
         ctx.fill();
@@ -151,7 +185,7 @@ class Dust{
     }
 
     drawDust(){
-        ctx.fillstyle = this.color;
+        ctx.fillStyle = this.color;
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
         ctx.fill();
@@ -161,17 +195,28 @@ class Dust{
 //let trees = [];
 
 //CREATING OBJECTS
+
 let drone = new Drone(200, 200);
+
+let depot = new Depot(100, 100);
 
 //AN ARRAY OF 6 CLINICS as delivery points
 let clinics = [
-    new DeliveryPoint("Oloshaiki", 200, 100, "aqua"),
-    new DeliveryPoint("Inkoiriento", 500, 200, "pink"),
-    new DeliveryPoint("Nyamokenye", 700, 150, "blue"),
-    new DeliveryPoint("Maugo", 250, 500, "purple"),
-    new DeliveryPoint("Kimuka", 600, 450, "brown"),
-    new DeliveryPoint("Lengusaka", 850, 550, "deeppink")
+    new Clinic("Oloshaiki", 200, 100, "aqua"),
+    new Clinic("Inkoiriento", 500, 200, "pink"),
+    new Clinic("Nyamokenye", 700, 150, "blue"),
+    new Clinic("Maugo", 250, 500, "purple"),
+    new Clinic("Kimuka", 600, 450, "brown"),
+    new Clinic("Lengusaka", 850, 550, "deeppink")
 ]
+
+//Solar stations array
+let solarStations = [
+    new SolarStation(300, 200),
+    new SolarStation(700, 150),
+    new SolarStation(500, 500)
+];
+
 
 //Trees array creating 3 trees for now
 let trees = [
@@ -203,53 +248,96 @@ function checkCollision(drone, tree){
     return distance <= tree.radius + drone.width
 }
 
+//COLISION DETECTION FOR DRONE AND DEPOT TO PICK UP SUPPLIES
+function checkDepotCollision(drone, depot){
+    return(
+        drone.x <= depot.x + depot.width &&
+        drone.x + drone.width >= depot.x &&
+        drone.y <= depot.y + depot.height &&
+        drone.y + drone.height >= depot.y
+    );
+}
+
 //ANIMATE FUNCTION
 function animate(){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     drone.moveDrone();
     drone.drawDrone();
+    depot.drawDepot();
+
+    //check if the drone collides with the depot to collect supplies
+    if(checkDepotCollision(drone, depot)){
+        drone.hasSupplies = true;
+        console.log("Supplies collected")
+    }
 
     //Collision check with trees
-trees.forEach(tree => {
-    tree.drawTree();
-    if(checkCollision(drone, tree)) {
-        //when drone collides with a tree it must stop
+    trees.forEach(tree => {
+        tree.drawTree();
+        if(checkCollision(drone, tree)) {
+            //when drone collides with a tree it must stop
+            drone.velocityX = 0;
+            drone.velocityY = 0;
 
-        //and it must reduce the battery
+            //and it must reduce the battery
+            drone.battery -= 10;
 
-        //and show that a tree has been hit
-    }
-});
+            //and show that a tree has been hit
+            console.log("Tree hit!")
+        }
+    });
 
-//Collision check with birds
-birds.forEach(bird => {
-    bird.drawBird();
-    if(checkCollision(drone, bird)) {
-        //when drone collides with a tree it must stop
+    //Collision check with birds
+    birds.forEach(bird => {
+        bird.drawBird();
+        if(checkCollision(drone, bird)) {
+            //when drone collides with a bird it must stop
+            drone.velocityX = 0;
+            drone.velocityY = 0;
 
-        //and it must reduce the battery
+            //and it must reduce the battery
+            drone.battery -= 5;
 
-        //and show that a tree has been hit
-    }
-});
+            //and show that a bird has been hit
+            console.log("Bird hit!")
+        }
+    });
 
-//DRAW THE CLINICS
-clinics.forEach(clinic => {
-    clinic.drawClinic();
-});
+    //DRAW THE CLINICS
+    clinics.forEach(clinic => {
+        clinic.drawClinic();
+    });
 
-//CHECK IF IF THE SUPPLIES WERE DELIVERED TO THE CLINIC WHEN THE DRONE TOUCHES THE CLINIC
-clinics.forEach(clinic => {
-    if(checkCollision(drone, clinic) && !(clinic.deliveryCompleted)){
-        clinic.deliveryCompleted = true;
-        score += 100;
-        console.log(clinic.name + "recieved supplies!");
-    }
-    
-});
+    //CHECK IF IF THE SUPPLIES WERE DELIVERED TO THE CLINIC WHEN THE DRONE TOUCHES THE CLINIC
+    clinics.forEach(clinic => {
+        if(checkCollision(drone, clinic) &&
+        !(clinic.deliveryCompleted) &&
+        drone.hasSupplies){
+            clinic.deliveryCompleted = true;
+            score += 100;
+            console.log(clinic.name + "recieved supplies!");
+        }
+        
+    });
 
-requestAnimationFrame(animate);
+    //Draw the solar stations
+    solarStations.forEach(solarStation => {
+        solarStation.drawSolarStation();
+    });
+
+    //Recharge at Solar Stations
+    solarStations.forEach(solarStation => {
+        if(checkCollision(drone, solarStation)){
+            drone.battery += 5;
+
+            if(drone.battery >= 100){
+                drone.battery = 100;
+            }
+        }
+    });
+
+    requestAnimationFrame(animate);
 
 }
 
