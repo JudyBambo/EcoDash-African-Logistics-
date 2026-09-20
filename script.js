@@ -56,11 +56,48 @@ class Drone {
 
 }
 
+//DELIVERY POINTS (VILLAGES CLINICS) CLASS
+class Clinic{
+    constructor(name, x, y, color ){
+        this.name = name;
+        this.x = x;
+        this.y = y;
+        this.color = color;
+
+        this.radius = 30; 
+        this.deliveryCompleted = false;
+    }
+
+    //DRAW THE CLINICS
+    drawClinic(){
+        ctx.fillstyle = this.deliveryCompleted ? "gray" : "red";
+        ctx.beginPath();
+        ctx.arc(this.x, this.y,this.radius, 0, Math.PI*2);
+        ctx.fill();
+    }
+}
+
+//SUPPLIES PICKUP LOCATION
+class Depot{
+    contructor(x, y){
+        this.x = x;
+        this.y = y;
+
+        this.width = 100;
+        this.height = 50;
+    }
+
+    drawDepot(){
+        ctx.beginPath();
+        ctx.fillstyle = "brown";
+        ctx.rect(this.x, this.y, this.width, this.height);
+        ctx.fill();
+    }
+}
+
 //CLASS FOR TREES
 class Tree{
-
     constructor(x, y, radius, color="green"){
-
         this.x = x;
         this.y = y;
         this.radius = radius;
@@ -69,18 +106,15 @@ class Tree{
 
     //METHOD TO DRAW A TREE
     drawTree(){
-        
         ctx.fillstyle = this.color;
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
         ctx.fill();
-
     }
 
 }
 
 //CLASS FOR Birds
-
 class Bird {
     constructor(x, y,radius=5, color="yellow"){
         this.x = x;
@@ -129,6 +163,16 @@ class Dust{
 //CREATING OBJECTS
 let drone = new Drone(200, 200);
 
+//AN ARRAY OF 6 CLINICS as delivery points
+let clinics = [
+    new DeliveryPoint("Oloshaiki", 200, 100, "aqua"),
+    new DeliveryPoint("Inkoiriento", 500, 200, "pink"),
+    new DeliveryPoint("Nyamokenye", 700, 150, "blue"),
+    new DeliveryPoint("Maugo", 250, 500, "purple"),
+    new DeliveryPoint("Kimuka", 600, 450, "brown"),
+    new DeliveryPoint("Lengusaka", 850, 550, "deeppink")
+]
+
 //Trees array creating 3 trees for now
 let trees = [
     new Tree(100, 100),
@@ -149,7 +193,6 @@ for (let index = 0; index < 50; index++) {
     const dustParticle = new Dust(Math.random()*canvas.width, Math.random()*canvas.height);
     dustParticles.push(dustParticle);
 }
-
 
 //DRONE COLLISSION AGAIN BIRDS AND TREES
 function checkCollision(drone, tree){
@@ -189,6 +232,21 @@ birds.forEach(bird => {
 
         //and show that a tree has been hit
     }
+});
+
+//DRAW THE CLINICS
+clinics.forEach(clinic => {
+    clinic.drawClinic();
+});
+
+//CHECK IF IF THE SUPPLIES WERE DELIVERED TO THE CLINIC WHEN THE DRONE TOUCHES THE CLINIC
+clinics.forEach(clinic => {
+    if(checkCollision(drone, clinic) && !(clinic.deliveryCompleted)){
+        clinic.deliveryCompleted = true;
+        score += 100;
+        console.log(clinic.name + "recieved supplies!");
+    }
+    
 });
 
 requestAnimationFrame(animate);
