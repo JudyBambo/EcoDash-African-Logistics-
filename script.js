@@ -5,6 +5,14 @@ canvas.height = 2000;
 let ctx = canvas.getContext("2d");
 
 let score = 0;
+let highScore = localStorage.getItem("highScore") || 0;
+let missedDeliveries = 0;
+
+if(score > highScore){
+    highScore = score;
+    localStorage.setItem("highScore", highScore);
+}
+ctx.fillText("High Score: " + highScore, 20, 60);
 
 //DRONE CLASS
 class Drone {
@@ -22,6 +30,7 @@ class Drone {
         this.acceleration = 0.1;
         this.hasSupplies = false;
         this.battery = 100;
+        this.distanceTravelled = 0;
     }
 
     //METHOD TO DRAW A DRONE
@@ -42,9 +51,22 @@ class Drone {
         if(keys.ArrowLeft) {this.velocityX -= this.acceleration}
         if(keys.ArrowRight) {this.velocityX += this.acceleration}
 
+        let initialX = this.x;
+        let initialY = this.y;
+
         //Position update
         this.x += this.velocityX;
         this.y += this.velocityY;
+
+        //Calculating the distance between 2 points
+        let distance = Math.sqrt(Math.pow(this.x - initialX, 2) + Math.pow(this.y - initialY, 2));
+
+        //Add the distance to the distanceTravelled
+        this.distanceTravelled += distance;
+
+        //Display the distance
+        ctx.fillText("Distance Travelled: " + Math.floor(drone.distanceTravelled), 20, 80);
+
 
         //boundries, if the drone hits the walls, it must stop
         if (this.y <= 0 || this.y + this.height >= canvas.height){
@@ -77,6 +99,7 @@ class Clinic{
 
         this.radius = 30; 
         this.deliveryCompleted = false;
+        this.timeLimit = 30;
     }
 
     //DRAW THE CLINICS
@@ -85,6 +108,32 @@ class Clinic{
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2);
         ctx.fill();
+    }
+
+    //UPDATE METHOD
+    update(){
+
+        //timer countdown for deliveries
+        if(!this.deliveryCompleted){
+            this.timeLimit -= 1/60;
+        }
+
+        //timeout logic
+        if(
+            this.timeLimit <= 0 &&
+            !this.deliveryCompleted
+        ){
+            this.deliveryCompleted = true;
+            missedDeliveries++;
+            alert(this.name + "delivery missed!");
+        }
+
+        
+        //Missed Deliveries display
+        ctx.fillText("Missed Deliveries: " + missedDeliveries, 20, 120);
+
+        ctx.fillStyle = "black";
+        ctx.fillText(Math.ceil(this.timeLimit), this.x - 10, this.y - 40);
     }
 }
 
@@ -176,6 +225,7 @@ class Dust{
         this.radius = 2;
         this.color = "grey";
 
+        //controls how long the dust lasts
         this.life = 30;
     }
 
@@ -234,9 +284,22 @@ let birds = [
 //DUST PARTICLES ARRAY
 let dustParticles = [];
 
+//create the dust particles and store them in the array
 for (let index = 0; index < 50; index++) {
     const dustParticle = new Dust(Math.random()*canvas.width, Math.random()*canvas.height);
     dustParticles.push(dustParticle);
+}
+
+//Loops through the dustParticles array from the last item backwards
+for(let i = dustParticles.length - 1; i >= 0; i--){
+
+    dustParticles[i].update();
+    dustParticles[i].drawDust();
+
+    //If the particle ran out of life, it is removed from the array
+    if(dustParticles[i].life <= 0){
+        dustParticles.splice(i, 1);
+    }
 }
 
 //DRONE COLLISSION AGAIN BIRDS AND TREES
