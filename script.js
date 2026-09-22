@@ -1,18 +1,15 @@
 let canvas = document.getElementById("canvas");
-canvas.width = 3000;
-canvas.height = 2000;
+canvas.width = innerWidth;
+canvas.height = innerHeight;
 
 let ctx = canvas.getContext("2d");
 
 let score = 0;
 let highScore = localStorage.getItem("highScore") || 0;
 let missedDeliveries = 0;
-
-if(score > highScore){
-    highScore = score;
-    localStorage.setItem("highScore", highScore);
-}
-ctx.fillText("High Score: " + highScore, 20, 60);
+let gameOver = false;
+let gameStarted = false;
+let gamePaused = false;
 
 //DRONE CLASS
 class Drone {
@@ -22,8 +19,8 @@ class Drone {
         this.y = y; 
         this.color = color;
 
-        this.width = 20;
-        this.height = 20;
+        this.width = 50;
+        this.height = 50;
 
         this.velocityX = 1;
         this.velocityY = 0;
@@ -44,7 +41,6 @@ class Drone {
     //METHOD TO MOVE THE DRONE
     moveDrone (){
 
-        this.drawDrone();
         //contollers
         if(keys.ArrowUp) {this.velocityY -= this.acceleration}
         if(keys.ArrowDown) {this.velocityY += this.acceleration}
@@ -84,7 +80,8 @@ class Drone {
         //check if battery is empty
         if(this.battery <= 0){
             this.battery = 0;
-            //and end the game
+            //End the game
+            gameOver = true;
         }
     }
 }
@@ -128,7 +125,7 @@ class Clinic{
             alert(this.name + "delivery missed!");
         }
 
-        
+
         //Missed Deliveries display
         ctx.fillText("Missed Deliveries: " + missedDeliveries, 20, 120);
 
@@ -181,7 +178,7 @@ class SolarStation {
 
 //CLASS FOR TREES
 class Tree{
-    constructor(x, y, radius, color="green"){
+    constructor(x, y, radius = 30, color="green"){
         this.x = x;
         this.y = y;
         this.radius = radius;
@@ -290,25 +287,16 @@ for (let index = 0; index < 50; index++) {
     dustParticles.push(dustParticle);
 }
 
-//Loops through the dustParticles array from the last item backwards
-for(let i = dustParticles.length - 1; i >= 0; i--){
+//DRONE COLLISSION AGAIN obstacles(birds & trees)
+function checkCollision(drone, obstacle){
+    let droneCenterX =  drone.x + drone.width / 2;
+    let droneCenterY = drone.y + drone.height / 2;
 
-    dustParticles[i].update();
-    dustParticles[i].drawDust();
-
-    //If the particle ran out of life, it is removed from the array
-    if(dustParticles[i].life <= 0){
-        dustParticles.splice(i, 1);
-    }
-}
-
-//DRONE COLLISSION AGAIN BIRDS AND TREES
-function checkCollision(drone, tree){
-    let distanceX = drone.x - tree.x;
-    let distanceY = drone.y - tree.y;
+    let distanceX = droneCenterX - obstacle.x;
+    let distanceY = droneCenterY - obstacle.y;
 
     let distance = Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
-    return distance <= tree.radius + drone.width
+    return distance <= obstacle.radius + drone.width / 2;
 }
 
 //COLISION DETECTION FOR DRONE AND DEPOT TO PICK UP SUPPLIES
@@ -325,21 +313,28 @@ function checkDepotCollision(drone, depot){
 function animate(){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    ctx.fillText("High Score: " + highScore, 20, 60);
+
     drone.moveDrone();
     drone.drawDrone();
     depot.drawDepot();
 
-    //check if the drone collides with the depot to collect supplies
-    if(checkDepotCollision(drone, depot)){
+    //check if the drone collides with the depot and has no supplies, then collect supplies
+    if(checkDepotCollision(drone, depot) && !drone.hasSupplies){
         drone.hasSupplies = true;
-        console.log("Supplies collected")
+        alert("Supplies collected!")
     }
 
     //Collision check with trees
     trees.forEach(tree => {
         tree.drawTree();
         if(checkCollision(drone, tree)) {
-            //when drone collides with a tree it must stop
+
+            //when drone collides with a tree it must move back
+            drone.x -= drone.velocityX;
+            drone.y -= drone.velocityY;
+
+            // it must stop
             drone.velocityX = 0;
             drone.velocityY = 0;
 
@@ -347,7 +342,7 @@ function animate(){
             drone.battery -= 10;
 
             //and show that a tree has been hit
-            console.log("Tree hit!")
+            alert("Tree hit!")
         }
     });
 
@@ -355,6 +350,11 @@ function animate(){
     birds.forEach(bird => {
         bird.drawBird();
         if(checkCollision(drone, bird)) {
+
+            //when drone collides with a tree it must move back
+            drone.x -= drone.velocityX;
+            drone.y -= drone.velocityY;
+
             //when drone collides with a bird it must stop
             drone.velocityX = 0;
             drone.velocityY = 0;
@@ -369,6 +369,7 @@ function animate(){
 
     //DRAW THE CLINICS
     clinics.forEach(clinic => {
+        clinic.update();
         clinic.drawClinic();
     });
 
@@ -379,7 +380,8 @@ function animate(){
         drone.hasSupplies){
             clinic.deliveryCompleted = true;
             score += 100;
-            console.log(clinic.name + "recieved supplies!");
+            drone.hasSupplies = false;
+            alert(clinic.name + "recieved supplies!");
         }
         
     });
@@ -392,13 +394,37 @@ function animate(){
     //Recharge at Solar Stations
     solarStations.forEach(solarStation => {
         if(checkCollision(drone, solarStation)){
-            drone.battery += 5;
+            drone.battery += 0.2;
 
             if(drone.battery >= 100){
                 drone.battery = 100;
             }
         }
     });
+
+    //BATTERY DISPLAY
+    ctx.fillStyle = "black";
+    ctx.font = "20px Arial";
+    ctx.fillText("Battery: " + Math.floor(drone.battery) + "%", 20, 30);
+
+    //HIGHSCORE LOGIC
+    if(score > highScore){
+    highScore = score;
+    localStorage.setItem("highScore", highScore);
+    }
+
+    //REMOVING THE DUST PARTICLES
+    //Loops through the dustParticles array from the last item backwards
+    for(let i = dustParticles.length - 1; i >= 0; i--){
+
+        dustParticles[i].update();
+        dustParticles[i].drawDust();
+
+        //If the particle ran out of life, it is removed from the array
+        if(dustParticles[i].life <= 0){
+            dustParticles.splice(i, 1);
+        }
+    }
 
     requestAnimationFrame(animate);
 
