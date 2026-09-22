@@ -7,9 +7,45 @@ let ctx = canvas.getContext("2d");
 let score = 0;
 let highScore = localStorage.getItem("highScore") || 0;
 let missedDeliveries = 0;
-let gameOver = false;
-let gameStarted = false;
-let gamePaused = false;
+let completedDeliveries = 0;
+//GAME STATE
+let gameState = "start";
+let keys = {
+    ArrowUp: false,
+    ArrowDown: false,
+    ArrowLeft: false,
+    ArrowRight: false
+};
+
+//START GAME LOGIC
+let startButton = document.getElementById("startButton");
+startButton.addEventListener("click", function() {
+    gameState = "playing";
+    document.getElementById("startScreen").style.display = "none";
+
+});
+
+//GAME PAUSE LOGIC
+let pauseButton = document.getElementById("pauseButton");
+pauseButton.addEventListener("click", function() {
+
+    if(gameState === "playing") {
+
+        gameState = "paused";
+        document.getElementById("pauseScreen").style.display = "flex";
+    }
+
+});
+
+//RESUME LOGIC
+let resumeButton = document.getElementById("resumeButton");
+resumeButton.addEventListener("click", function() {
+
+    gameState = "playing";
+
+    document.getElementById("pauseScreen").style.display = "none";
+
+});
 
 //DRONE CLASS
 class Drone {
@@ -22,12 +58,13 @@ class Drone {
         this.width = 50;
         this.height = 50;
 
-        this.velocityX = 1;
+        this.velocityX = 0;
         this.velocityY = 0;
-        this.acceleration = 0.1;
+        this.acceleration = 0.01;
         this.hasSupplies = false;
         this.battery = 100;
         this.distanceTravelled = 0;
+        
     }
 
     //METHOD TO DRAW A DRONE
@@ -47,12 +84,28 @@ class Drone {
         if(keys.ArrowLeft) {this.velocityX -= this.acceleration}
         if(keys.ArrowRight) {this.velocityX += this.acceleration}
 
+        // Slow down when no horizontal key is pressed
+        if(!keys.ArrowLeft && !keys.ArrowRight){
+            this.velocityX *= 0.95;
+        }
+
+        // Slow down when no vertical key is pressed
+        if(!keys.ArrowUp && !keys.ArrowDown){
+            this.velocityY *= 0.95;
+        }
+
+
         let initialX = this.x;
         let initialY = this.y;
 
+        //SPEED LIMITT
+        this.velocityX = Math.max(-5, Math.min(5, this.velocityX));
+        this.velocityY = Math.max(-5, Math.min(5, this.velocityY));
+        
         //Position update
         this.x += this.velocityX;
         this.y += this.velocityY;
+
 
         //Calculating the distance between 2 points
         let distance = Math.sqrt(Math.pow(this.x - initialX, 2) + Math.pow(this.y - initialY, 2));
@@ -81,7 +134,7 @@ class Drone {
         if(this.battery <= 0){
             this.battery = 0;
             //End the game
-            gameOver = true;
+            gameState = "gameover";
         }
     }
 }
@@ -94,9 +147,12 @@ class Clinic{
         this.y = y;
         this.color = color;
 
-        this.radius = 30; 
+        this.radius = 50; 
         this.deliveryCompleted = false;
         this.timeLimit = 30;
+
+        //Have ove clinic request for supplies at a time
+        this.requesting = false;
     }
 
     //DRAW THE CLINICS
@@ -127,10 +183,10 @@ class Clinic{
 
 
         //Missed Deliveries display
-        ctx.fillText("Missed Deliveries: " + missedDeliveries, 20, 120);
+        // ctx.fillText("Missed Deliveries: " + missedDeliveries, 20, 120);
 
-        ctx.fillStyle = "black";
-        ctx.fillText(Math.ceil(this.timeLimit), this.x - 10, this.y - 40);
+        // ctx.fillStyle = "black";
+        // ctx.fillText(Math.ceil(this.timeLimit), this.x - 10, this.y - 40);
     }
 }
 
@@ -242,7 +298,6 @@ class Dust{
 //let trees = [];
 
 //CREATING OBJECTS
-
 let drone = new Drone(200, 200);
 
 let depot = new Depot(100, 100);
@@ -256,6 +311,19 @@ let clinics = [
     new Clinic("Kimuka", 600, 450, "brown"),
     new Clinic("Lengusaka", 850, 550, "deeppink")
 ]
+
+let currentClinic = 0;
+clinics[currentClinic].requesting = "true";
+//Function to control clinics supplies requests
+function nextClinic() {
+
+    clinics[currentClinic].requesting = false;
+    //next clinic
+    currentClinic++;
+    if (currentClinic < clinics.length) {
+        clinics[currentClinic].requesting = true;
+    }
+}
 
 //Solar stations array
 let solarStations = [
@@ -309,125 +377,159 @@ function checkDepotCollision(drone, depot){
     );
 }
 
+//Keybod controlls (aarows)
+document.addEventListener("keydown", function(event) {
+
+    if (event.key in keys) {
+        keys[event.key] = true;
+    }
+
+});
+
+document.addEventListener("keyup", function(event) {
+
+    if (event.key in keys) {
+        keys[event.key] = false;
+    }
+
+});
+
 //ANIMATE FUNCTION
 function animate(){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    //UPDATE HUD
+    document.getElementById("score").textContent = score;
+    document.getElementById("battery").textContent = Math.floor(drone.battery) + "%";
+    document.getElementById("delivered").textContent = completedDeliveries;
+    document.getElementById("distance").textContent = Math.floor(drone.distanceTravelled);
+    document.getElementById("missed").textContent = missedDeliveries;
+
+
     ctx.fillText("High Score: " + highScore, 20, 60);
 
-    drone.moveDrone();
-    drone.drawDrone();
-    depot.drawDepot();
+    if (gameState === "playing"){
 
-    //check if the drone collides with the depot and has no supplies, then collect supplies
-    if(checkDepotCollision(drone, depot) && !drone.hasSupplies){
-        drone.hasSupplies = true;
-        alert("Supplies collected!")
-    }
+        drone.moveDrone();
+        drone.drawDrone();
+        depot.drawDepot();
 
-    //Collision check with trees
-    trees.forEach(tree => {
-        tree.drawTree();
-        if(checkCollision(drone, tree)) {
-
-            //when drone collides with a tree it must move back
-            drone.x -= drone.velocityX;
-            drone.y -= drone.velocityY;
-
-            // it must stop
-            drone.velocityX = 0;
-            drone.velocityY = 0;
-
-            //and it must reduce the battery
-            drone.battery -= 10;
-
-            //and show that a tree has been hit
-            alert("Tree hit!")
+        //check if the drone collides with the depot and has no supplies, then collect supplies
+        if(checkDepotCollision(drone, depot) && !drone.hasSupplies){
+            drone.hasSupplies = true;
+            alert("Supplies collected!")
         }
-    });
 
-    //Collision check with birds
-    birds.forEach(bird => {
-        bird.drawBird();
-        if(checkCollision(drone, bird)) {
+        //Collision check with trees
+        trees.forEach(tree => {
+            tree.drawTree();
+            if(checkCollision(drone, tree)) {
 
-            //when drone collides with a tree it must move back
-            drone.x -= drone.velocityX;
-            drone.y -= drone.velocityY;
+                //when drone collides with a tree it must move back
+                drone.x -= drone.velocityX;
+                drone.y -= drone.velocityY;
 
-            //when drone collides with a bird it must stop
-            drone.velocityX = 0;
-            drone.velocityY = 0;
+                // it must stop
+                drone.velocityX = 0;
+                drone.velocityY = 0;
 
-            //and it must reduce the battery
-            drone.battery -= 5;
+                //and it must reduce the battery
+                drone.battery -= 10;
 
-            //and show that a bird has been hit
-            console.log("Bird hit!")
+                //and show that a tree has been hit
+                console.log("Tree hit!")
+            }
+        });
+
+        //Collision check with birds
+        birds.forEach(bird => {
+            bird.drawBird();
+            if(checkCollision(drone, bird)) {
+
+                //when drone collides with a tree it must move back
+                drone.x -= drone.velocityX;
+                drone.y -= drone.velocityY;
+
+                //when drone collides with a bird it must stop
+                drone.velocityX = 0;
+                drone.velocityY = 0;
+
+                //and it must reduce the battery
+                drone.battery -= 5;
+
+                //and show that a bird has been hit
+                console.log("Bird hit!")
+            }
+        });
+
+        //DRAW THE CLINICS
+        clinics.forEach(clinic => {
+            clinic.update();
+            clinic.drawClinic();
+        });
+
+        //CHECK IF IF THE SUPPLIES WERE DELIVERED TO THE CLINIC WHEN THE DRONE TOUCHES THE CLINIC
+        clinics.forEach(clinic => {
+            if(checkCollision(drone, clinic) &&
+            !(clinic.deliveryCompleted) &&
+            drone.hasSupplies){
+                clinic.deliveryCompleted = true;
+                completedDeliveries++;
+                score += 100;
+                drone.hasSupplies = false;
+
+                console.log(clinic.name + " recieved supplies!");
+
+                //The next clinic makes a request as soon as delivery is completed
+                nextClinic();
+            }
+            
+        });
+
+        //Draw the solar stations
+        solarStations.forEach(solarStation => {
+            solarStation.drawSolarStation();
+        });
+
+        //Recharge at Solar Stations
+        solarStations.forEach(solarStation => {
+            if(checkCollision(drone, solarStation)){
+                drone.battery += 0.2;
+
+                if(drone.battery >= 100){
+                    drone.battery = 100;
+                }
+            }
+        });
+
+        //BATTERY DISPLAY
+        // ctx.fillStyle = "black";
+        // ctx.font = "20px Arial";
+        // ctx.fillText("Battery: " + Math.floor(drone.battery) + "%", 20, 30);
+
+        //HIGHSCORE LOGIC
+        if(score > highScore){
+        highScore = score;
+        localStorage.setItem("highScore", highScore);
         }
-    });
 
-    //DRAW THE CLINICS
-    clinics.forEach(clinic => {
-        clinic.update();
-        clinic.drawClinic();
-    });
+        //REMOVING THE DUST PARTICLES
+        //Loops through the dustParticles array from the last item backwards
+        for(let i = dustParticles.length - 1; i >= 0; i--){
 
-    //CHECK IF IF THE SUPPLIES WERE DELIVERED TO THE CLINIC WHEN THE DRONE TOUCHES THE CLINIC
-    clinics.forEach(clinic => {
-        if(checkCollision(drone, clinic) &&
-        !(clinic.deliveryCompleted) &&
-        drone.hasSupplies){
-            clinic.deliveryCompleted = true;
-            score += 100;
-            drone.hasSupplies = false;
-            alert(clinic.name + "recieved supplies!");
-        }
-        
-    });
+            dustParticles[i].update();
+            dustParticles[i].drawDust();
 
-    //Draw the solar stations
-    solarStations.forEach(solarStation => {
-        solarStation.drawSolarStation();
-    });
-
-    //Recharge at Solar Stations
-    solarStations.forEach(solarStation => {
-        if(checkCollision(drone, solarStation)){
-            drone.battery += 0.2;
-
-            if(drone.battery >= 100){
-                drone.battery = 100;
+            //If the particle ran out of life, it is removed from the array
+            if(dustParticles[i].life <= 0){
+                dustParticles.splice(i, 1);
             }
         }
-    });
 
-    //BATTERY DISPLAY
-    ctx.fillStyle = "black";
-    ctx.font = "20px Arial";
-    ctx.fillText("Battery: " + Math.floor(drone.battery) + "%", 20, 30);
-
-    //HIGHSCORE LOGIC
-    if(score > highScore){
-    highScore = score;
-    localStorage.setItem("highScore", highScore);
     }
-
-    //REMOVING THE DUST PARTICLES
-    //Loops through the dustParticles array from the last item backwards
-    for(let i = dustParticles.length - 1; i >= 0; i--){
-
-        dustParticles[i].update();
-        dustParticles[i].drawDust();
-
-        //If the particle ran out of life, it is removed from the array
-        if(dustParticles[i].life <= 0){
-            dustParticles.splice(i, 1);
-        }
-    }
-
     requestAnimationFrame(animate);
 
 }
 
 requestAnimationFrame(animate);
+

@@ -1,24 +1,38 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Eco Dash</title>
-</head>
-<body>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div id="startScreen">
+      <h1>Kenya Medical Drone</h1>
+
+      <p>Medical Supply Run</p>
+
+      <p>Use the arrow keys to fly.</p>
+
+      <button id="startButton">Start Game</button>
+    </div>
+
+    <button id="pauseButton">Pause</button>
+
+    <div>
+      <h1>Game Paused</h1>
+      <button id="resumeButton">Resume</button>
+    </div>
+
+    <!-- HUD -->
+    <div id="score">0</div>
+    <div id="battery">100%</div>
+    <div id="delivered">0</div>
+    <div id="distance">0</div>
+    <div id="missed">0</div>
+
     <canvas id="canvas"></canvas>
 
-    <!-- PLAYER'S INPUT -->
-     <form action="script.js" method="post">
-        <label for="playerName">Player's Name: </label>
-        <input type="text" name="playerName" id="playerName">
-
-        <label for="droneColor">Drone Color: </label>
-        <input type="color" name="droneColor" id="droneColor">
-
-        <button type="submit">Play</button>
-     </form>
-    
     <script src="script.js"></script>
-</body>
+  </body>
 </html>
