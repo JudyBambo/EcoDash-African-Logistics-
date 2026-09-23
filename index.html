@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
+    <!-- START GAME SCREEN -->
     <div id="startScreen">
       <h1>Kenya Medical Drone</h1>
 
@@ -22,6 +23,19 @@
     <div>
       <h1>Game Paused</h1>
       <button id="resumeButton">Resume</button>
+    </div>
+
+    <!-- GAMEOVER SCREEN -->
+    <div id="gameOverScreen">
+      <h1>Game Over</h1>
+
+      <p>Score: <span id="finalScore">0</span></p>
+
+      <p>Delivered: <span id="finalDelivered">0</span></p>
+
+      <p>Missed: <span id="finalMissed">0</span></p>
+
+      <button id="restartButton">Play Again</button>
     </div>
 
     <!-- HUD -->
