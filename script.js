@@ -275,13 +275,14 @@ class Tree {
 
 //CLASS FOR Birds
 class Bird {
-    constructor(x, y, radius = 5, color = "yellow") {
+    constructor(x, y, radius = 10, color = "yellow") {
         this.x = x;
         this.y = y;
         this.radius = radius;
         this.color = color;
 
         this.velocity = 2;
+        this.direction = 1;
     }
 
     drawBird() {
@@ -289,6 +290,17 @@ class Bird {
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
         ctx.fill();
+    }
+
+    moveBird(){
+        this.x += this.velocity * this.direction;
+        
+        if (this.x + this.radius >= canvas.width){
+            this.direction = -1;
+        }
+        if (this.x - this.radius <= 0){
+            this.direction = 1;
+        }
     }
 }
 
@@ -336,7 +348,7 @@ let clinics = [
 ]
 
 let currentClinic = 0;
-clinics[currentClinic].requesting = "true";
+clinics[currentClinic].requesting = true;
 //Function to control clinics supplies requests
 function nextClinic() {
 
@@ -358,17 +370,67 @@ let solarStations = [
 ];
 
 
-//Trees array creating 3 trees for now
+//Trees array creating 21 trees for now
 let trees = [
-    new Tree(100, 100),
-    new Tree(400, 250),
-    new Tree(600, 150)
+    // TOP AREA
+    new Tree(150, 250),
+    new Tree(800, 150, 40),
+    new Tree(1500, 250),
+    new Tree(2100, 180, 40),
+
+    // MIDDLE AREA
+    new Tree(350, 700),
+    new Tree(950, 600, 40),
+    new Tree(1700, 700),
+    new Tree(2350, 600, 40),
+
+    // LOWER-MIDDLE AREA
+    new Tree(200, 1100),
+    new Tree(750, 1000, 45),
+    new Tree(1900, 1050, 40),
+    new Tree(2400, 1000),
+
+    // BOTTOM AREA
+    new Tree(400, 1450, 45),
+    new Tree(1000, 1400),
+    new Tree(1750, 1450, 40),
+    new Tree(2150, 1350),
+
+    // VERY BOTTOM
+    new Tree(250, 1750,50),
+    new Tree(1300, 1750, 40),
+    new Tree(1900, 1750),
+    new Tree(2400, 1700, 45)
 ];
 
 //BIRDS ARRAY 
 let birds = [
-    new Bird(50, 80),
-    new Bird(300, 120)
+    new Bird(300, 150),
+    new Bird(700, 400),
+    new Bird(1100, 200),
+    new Bird(1600, 350),
+    new Bird(2100, 250),
+
+    new Bird(450, 600),
+    new Bird(900, 800),
+    new Bird(1400, 650),
+    new Bird(2000, 750),
+
+    new Bird(250, 1050),
+    new Bird(800, 1150),
+    new Bird(1300, 1000),
+    new Bird(1800, 1150),
+    new Bird(2300, 1050),
+
+    new Bird(500, 1450),
+    new Bird(1000, 1550),
+    new Bird(1500, 1400),
+    new Bird(2000, 1500),
+
+    new Bird(700, 1750),
+    new Bird(1400, 1700),
+    new Bird(2100, 1750)
+
 ];
 
 //DUST PARTICLES ARRAY
@@ -479,6 +541,7 @@ function animate() {
 
         //Collision check with birds
         birds.forEach(bird => {
+            bird.moveBird();
             bird.drawBird();
             if (checkCollision(drone, bird)) {
 

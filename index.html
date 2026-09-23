@@ -7,29 +7,43 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
+    <h1>Drone Medical Delivery - Kenya</h1>
+    <!-- HUD -->
+    <div id="hud">
+      <span>Score: <span id="score">0</span></span>
+      <span>Battery: <span id="battery">100%</span></span>
+      <span>Delivered: <span id="delivered">0</span></span>
+      <span>Distance: <span id="distance">0</span></span>
+      <span>Missed: <span id="missed">0</span></span>
+    </div>
+
+    <canvas id="canvas"></canvas>
+    <br />
+    <button id="pauseButton">Pause</button>
+
     <!-- START GAME SCREEN -->
-    <div id="startScreen">
-      <h1>Kenya Medical Drone</h1>
-
+    <div id="startScreen" class="overlay">
       <p>Medical Supply Run</p>
-
       <p>Use the arrow keys to fly.</p>
-
+      <p>
+        Fly your drone to the depot to collect supplies, then deliver them to
+        whichever clinic is currently requesting help. Watch your battery, and
+        recharge at the blue solar stations. Arrow keys move the drone.
+      </p>
       <button id="startButton">Start Game</button>
     </div>
 
-    <button id="pauseButton">Pause</button>
-
-    <div>
-      <h1>Game Paused</h1>
+    <!-- PAUSE SCREEN -->
+    <div id="pauseScreen" class="overlay" style="display: none">
+      <h2>Paused</h2>
       <button id="resumeButton">Resume</button>
     </div>
 
     <!-- GAMEOVER SCREEN -->
-    <div id="gameOverScreen">
+    <div id="gameOverScreen" class="overlay" style="display: none">
       <h1>Game Over</h1>
 
-      <p>Score: <span id="finalScore">0</span></p>
+      <p>Final Score: <span id="finalScore">0</span></p>
 
       <p>Delivered: <span id="finalDelivered">0</span></p>
 
@@ -37,15 +51,6 @@
 
       <button id="restartButton">Play Again</button>
     </div>
-
-    <!-- HUD -->
-    <div id="score">0</div>
-    <div id="battery">100%</div>
-    <div id="delivered">0</div>
-    <div id="distance">0</div>
-    <div id="missed">0</div>
-
-    <canvas id="canvas"></canvas>
 
     <script src="script.js"></script>
   </body>
