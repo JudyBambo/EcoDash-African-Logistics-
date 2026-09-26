@@ -37,9 +37,9 @@ h1 {
     border: 3px solid #f2a20c;
     display: block;
     margin: 0 auto;
-    max-width: 96vw;
-    max-height: 70vh;
-    touch-action: none;
+    width: 96vw;
+    height: 70vh;
+    border: none;
 }
 
 #pauseButton {

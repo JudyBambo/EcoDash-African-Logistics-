@@ -12,6 +12,8 @@ let gameMessage = "";
 let messageTimer = 0;
 //GAME STATE
 let gameState = "start";
+
+//control keys array
 let keys = {
     ArrowUp: false,
     ArrowDown: false,
@@ -47,9 +49,14 @@ resumeButton.addEventListener("click", function () {
     document.getElementById("pauseScreen").style.display = "none";
 });
 
+//RESTART LOGIC
+let restartButton = document.getElementById("restartButton");
+restartButton.addEventListener("click", function () {
+    location.reload();
+});
+
 // GAMEOVER SCREEN
 function showGameOver() {
-
     document.getElementById("gameOverScreen").style.display = "flex";
     document.getElementById("finalScore").textContent = score;
 };
@@ -57,17 +64,17 @@ function showGameOver() {
 //DRONE CLASS
 class Drone {
     //CONSTRUCTOR
-    constructor(x, y, color = "green") {
+    constructor(x, y, color = "cyan") {
         this.x = x;
         this.y = y;
         this.color = color;
 
-        this.width = 50;
-        this.height = 50;
+        this.width = 100;
+        this.height = 95;
 
         this.velocityX = 0;
         this.velocityY = 0;
-        this.acceleration = 0.01;
+        this.acceleration = 0.05;
         this.hasSupplies = false;
         this.battery = 100;
         this.distanceTravelled = 0;
@@ -78,7 +85,6 @@ class Drone {
     drawDrone() {
         ctx.beginPath();
         ctx.fillStyle = this.color;
-        //BODY
         ctx.fillRect(this.x, this.y, this.width, this.height);
         ctx.fill();
     }
@@ -102,6 +108,11 @@ class Drone {
             this.velocityY *= 0.95;
         }
 
+        // Slow down when no horizontal key is pressed
+        if (!keys.ArrowLeft && !keys.ArrowRight) {
+            this.velocityX *= 0.95;
+        }
+
 
         let initialX = this.x;
         let initialY = this.y;
@@ -120,10 +131,6 @@ class Drone {
 
         //Add the distance to the distanceTravelled
         this.distanceTravelled += distance;
-
-        //Display the distance
-        ctx.fillText("Distance Travelled: " + Math.floor(drone.distanceTravelled), 20, 80);
-
 
         //boundries, if the drone hits the walls, it must stop
         if (this.y <= 0 || this.y + this.height >= canvas.height) {
@@ -155,9 +162,9 @@ class Clinic {
         this.y = y;
         this.color = color;
 
-        this.radius = 100;
+        this.radius = 150;
         this.deliveryCompleted = false;
-        this.timeLimit = 30;
+        this.timeLimit = 60;
 
         //Have ove clinic request for supplies at a time
         this.requesting = false;
@@ -168,7 +175,7 @@ class Clinic {
         if (this.requesting) {
             ctx.fillStyle = "yellow";
             //Diplay the timer
-            ctx.fillText(Math.ceil(this.timeLimit), this.x - 10, this.y - 60);
+            //ctx.fillText(Math.ceil(this.timeLimit), this.x - 10, this.y - 60);
         }
         else if (this.deliveryCompleted) {
             ctx.fillStyle = "gray";
@@ -203,13 +210,6 @@ class Clinic {
 
             nextClinic();
         }
-
-
-        //Missed Deliveries display
-        // ctx.fillText("Missed Deliveries: " + missedDeliveries, 20, 120);
-
-        // ctx.fillStyle = "black";
-        // ctx.fillText(Math.ceil(this.timeLimit), this.x - 10, this.y - 40);
     }
 }
 
@@ -219,13 +219,13 @@ class Depot {
         this.x = x;
         this.y = y;
 
-        this.width = 100;
-        this.height = 50;
+        this.width = 300;
+        this.height = 200;
     }
 
     drawDepot() {
         ctx.beginPath();
-        ctx.fillStyle = "brown";
+        ctx.fillStyle = "Pink";
         ctx.rect(this.x, this.y, this.width, this.height);
         ctx.fill();
     }
@@ -236,32 +236,24 @@ class SolarStation {
     constructor(x, y) {
         this.x = x;
         this.y = y;
-
-        this.radius = 30;
+        this.width = 200;
+        this.height = 150;
     }
 
     drawSolarStation() {
         ctx.fillStyle = "blue";
-        ctx.fillRect(this.x - 25, this.y - 15, 50, 30);
-
-        //Charging symbol
-        ctx.beginPath();
-        ctx.moveTo(this.x - 5, this.y - 10);
-        ctx.lineTo(this.x + 5, this.y - 10);
-        ctx.lineTo(this.x, this.y);
-        ctx.lineTo(this.x + 8, this.y);
-        ctx.lineTo(this.x - 5, this.y + 12);
+        ctx.fillRect(this.x - 25, this.y - 15, this.width, this.height);
         ctx.fill();
     }
 }
 
 //CLASS FOR TREES
 class Tree {
-    constructor(x, y, radius = 30, color = "green") {
+    constructor(x, y) {
         this.x = x;
         this.y = y;
-        this.radius = radius;
-        this.color = color;
+        this.radius = 60;
+        this.color = "green";
     }
 
     //METHOD TO DRAW A TREE
@@ -275,11 +267,11 @@ class Tree {
 
 //CLASS FOR Birds
 class Bird {
-    constructor(x, y, radius = 10, color = "yellow") {
+    constructor(x, y) {
         this.x = x;
         this.y = y;
-        this.radius = radius;
-        this.color = color;
+        this.radius = 15;
+        this.color = "orange";
 
         this.velocity = 2;
         this.direction = 1;
@@ -330,22 +322,21 @@ class Dust {
     }
 }
 
-//let trees = [];
 
 //CREATING OBJECTS
-let drone = new Drone(200, 200);
-
 let depot = new Depot(1320, 1650);
+
+let drone = new Drone(depot.x + depot.width + 20, depot.y + depot.height / 2 - 32,);
 
 //AN ARRAY OF 6 CLINICS as delivery points
 let clinics = [
-    new Clinic("Oloshaiki", 420, 380, "aqua"),
-    new Clinic("Inkoiriento", 1290, 300, "pink"),
-    new Clinic("Nyamokenye", 2200, 470, "blue"),
-    new Clinic("Maugo", 560, 1420, "purple"),
-    new Clinic("Kimuka", 1500, 1180, "brown"),
-    new Clinic("Lengusaka", 2250, 1560, "deeppink")
-]
+    new Clinic("Oloshaiki", 420, 380),
+        new Clinic("Inkoiriento", 1290, 300),
+        new Clinic("Nyamokenye", 2200, 470),
+        new Clinic("Maugo", 560, 1420),
+        new Clinic("Kimuka", 1500, 1180),
+        new Clinic("Lengusaka", 2250, 1560)
+];
 
 let currentClinic = 0;
 clinics[currentClinic].requesting = true;
@@ -359,78 +350,58 @@ function nextClinic() {
         clinics[currentClinic].requesting = true;
         clinics[currentClinic].timeLimit = 30;
     }
-}
+};
 
 //Solar stations array
 let solarStations = [
-    new SolarStation(700, 900),
-    new SolarStation(1900, 980),
+    new SolarStation(650, 700),
+    new SolarStation(1900, 880),
     new SolarStation(1180, 520),
-    new SolarStation(2350, 1150)
+    new SolarStation(2350, 1150),
 ];
-
 
 //Trees array creating 21 trees for now
 let trees = [
-    // TOP AREA
+        // TOP AREA
     new Tree(150, 250),
-    new Tree(800, 150, 40),
+    new Tree(800, 150, 60),
     new Tree(1500, 250),
-    new Tree(2100, 180, 40),
+    new Tree(2100, 180, 60),
 
     // MIDDLE AREA
     new Tree(350, 700),
-    new Tree(950, 600, 40),
+    new Tree(950, 600, 60),
     new Tree(1700, 700),
-    new Tree(2350, 600, 40),
+    new Tree(2350, 600, 60),
 
     // LOWER-MIDDLE AREA
     new Tree(200, 1100),
-    new Tree(750, 1000, 45),
-    new Tree(1900, 1050, 40),
+    new Tree(750, 1000, 60),
+    new Tree(1900, 1050, 60),
     new Tree(2400, 1000),
 
     // BOTTOM AREA
-    new Tree(400, 1450, 45),
+    new Tree(400, 1450, 60),
     new Tree(1000, 1400),
-    new Tree(1750, 1450, 40),
+    new Tree(1750, 1450, 60),
     new Tree(2150, 1350),
 
     // VERY BOTTOM
-    new Tree(250, 1750,50),
-    new Tree(1300, 1750, 40),
+    new Tree(250, 1750, 50),
+    new Tree(1300, 1750, 60),
     new Tree(1900, 1750),
-    new Tree(2400, 1700, 45)
+    new Tree(2400, 1700, 60),
 ];
 
 //BIRDS ARRAY 
 let birds = [
-    new Bird(300, 150),
-    new Bird(700, 400),
-    new Bird(1100, 200),
-    new Bird(1600, 350),
-    new Bird(2100, 250),
-
-    new Bird(450, 600),
-    new Bird(900, 800),
-    new Bird(1400, 650),
-    new Bird(2000, 750),
-
-    new Bird(250, 1050),
-    new Bird(800, 1150),
-    new Bird(1300, 1000),
-    new Bird(1800, 1150),
-    new Bird(2300, 1050),
-
-    new Bird(500, 1450),
-    new Bird(1000, 1550),
-    new Bird(1500, 1400),
-    new Bird(2000, 1500),
-
-    new Bird(700, 1750),
-    new Bird(1400, 1700),
-    new Bird(2100, 1750)
-
+    new Bird(50, 80),
+    new Bird(300, 120),
+    new Bird(900, 400),
+    new Bird(1600, 250),
+    new Bird(2100, 900),
+    new Bird(700, 1300),
+    new Bird(1800, 1500),
 ];
 
 //DUST PARTICLES ARRAY
@@ -597,7 +568,7 @@ function animate() {
 
         //Recharge at Solar Stations
         solarStations.forEach(solarStation => {
-            if (checkCollision(drone, solarStation)) {
+            if (checkDepotCollision(drone, solarStation)) {
                 drone.battery += 0.2;
 
                 if (drone.battery >= 100) {
@@ -605,11 +576,6 @@ function animate() {
                 }
             }
         });
-
-        //BATTERY DISPLAY
-        // ctx.fillStyle = "black";
-        // ctx.font = "20px Arial";
-        // ctx.fillText("Battery: " + Math.floor(drone.battery) + "%", 20, 30);
 
         //HIGHSCORE LOGIC
         if (score > highScore) {
