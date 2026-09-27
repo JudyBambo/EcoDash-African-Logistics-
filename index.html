@@ -8,13 +8,13 @@
   </head>
   <body>
     <h1>Drone Medical Delivery - Kenya</h1>
-    
+
     <!-- HUD -->
     <div id="hud">
       <span>Score: <span id="score">0</span></span>
       <span>Battery: <span id="battery">100%</span></span>
       <span>Delivered: <span id="delivered">0</span></span>
-      <span>Distance: <span id="distance">0</span></span>
+      <span>Distance: <span id="distance">0km</span></span>
       <span>Missed: <span id="missed">0</span></span>
     </div>
 
@@ -46,12 +46,25 @@
 
       <p>Final Score: <span id="finalScore">0</span></p>
 
-      <p>Delivered: <span id="finalDelivered">0</span></p>
+      <p>Delivered: <span id="completedDeliveries">0</span></p>
 
-      <p>Missed: <span id="finalMissed">0</span></p>
+      <p>Missed: <span id="missedDeliveries">0</span></p>
 
       <button id="restartButton">Play Again</button>
     </div>
+
+    <!-- Mission copleted Screen -->
+    <div id="winScreen" style="display: none;">
+      <h1>MISSION COMPLETE!</h1>
+
+      <p>All medical supplies were delivered!</p>
+
+      <p>Score: <span id="winScore">0</span></p>
+
+      <p>Deliveries Completed: <span id="winDeliveries">0</span></p>
+
+      <button id="winRestartButton">Play Again</button>
+  </div>
 
     <script src="script.js"></script>
   </body>
