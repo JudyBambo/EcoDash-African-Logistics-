@@ -2,6 +2,9 @@
 body {
     margin: 0;
     background: #123a36;
+    background-image: url(Images/Background_Image.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
     color: white;
     font-family: Arial, sans-serif;
     text-align: center;

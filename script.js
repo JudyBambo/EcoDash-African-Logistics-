@@ -10,8 +10,8 @@ let missedDeliveries = 0;
 let completedDeliveries = 0;
 let gameMessage = "";
 let messageTimer = 0;
-let backgroundSound = new Audio("Background_Sound.mp3");
-let collisionSound = new Audio("Collision_Sound.mp3");
+let backgroundSound = new Audio("Audio/Background_Sound.mp3");
+
 
 //GAME STATE
 let gameState = "start";
@@ -575,7 +575,6 @@ function animate() {
         trees.forEach(tree => {
             tree.drawTree();
             if (checkCollision(drone, tree)) {
-
                 //when drone collides with a tree it must move back
                 drone.x -= drone.velocityX * 20;
                 drone.y -= drone.velocityY * 20;
@@ -586,7 +585,6 @@ function animate() {
 
                 //and it must drain the battery
                 drone.battery -= 10;
-
 
                 //and show that a tree has been hit
                 gameMessage = "Tree hit!";
@@ -599,7 +597,6 @@ function animate() {
             bird.moveBird();
             bird.drawBird();
             if (checkCollision(drone, bird)) {
-
                 //when drone collides with a bird it must move back
                 drone.x -= drone.velocityX * 20;
                 drone.y -= drone.velocityY * 20;
