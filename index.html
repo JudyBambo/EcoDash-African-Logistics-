@@ -21,6 +21,7 @@
     <canvas id="canvas"></canvas>
     <br />
     <button id="pauseButton">Pause</button>
+    <button id="restartButton" onclick="resetGame()">Restart Game</button>
 
     <!-- START GAME SCREEN -->
     <div id="startScreen" class="overlay">
@@ -50,11 +51,11 @@
 
       <p>Missed: <span id="missedDeliveries">0</span></p>
 
-      <button id="restartButton">Play Again</button>
+      <button id="restartButton" onclick="resetGame()">Play Again</button>
     </div>
 
     <!-- Mission copleted Screen -->
-    <div id="winScreen" style="display: none;">
+    <div id="winScreen" style="display: none">
       <h1>MISSION COMPLETE!</h1>
 
       <p>All medical supplies were delivered!</p>
@@ -63,8 +64,8 @@
 
       <p>Deliveries Completed: <span id="winDeliveries">0</span></p>
 
-      <button id="winRestartButton">Play Again</button>
-  </div>
+      <button id="restartButton" onclick="resetGame()">Play Again</button>
+    </div>
 
     <script src="script.js"></script>
   </body>

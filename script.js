@@ -56,6 +56,12 @@ resumeButton.addEventListener("click", function () {
 //RESTART LOGIC
 let restartButton = document.getElementById("restartButton");
 function resetGame() {
+    
+    keys.ArrowUp = false;
+    keys.ArrowDown = false;
+    keys.ArrowLeft = false;
+    keys.ArrowRight = false;
+
     // Scores
     score = 0;
     missedDeliveries = 0;
@@ -83,7 +89,6 @@ function resetGame() {
     currentClinic = 0;
 
     clinics.forEach(clinic => {
-
         clinic.deliveryCompleted = false;
         clinic.deliveryMissed = false;
         clinic.requesting = false;
@@ -97,7 +102,6 @@ function resetGame() {
     document.getElementById("gameOverScreen").style.display = "none";
     document.getElementById("winScreen").style.display = "none";
     document.getElementById("pauseScreen").style.display = "none";
-
     // Restart music
     backgroundSound.play();
 }
@@ -547,10 +551,6 @@ function animate() {
     document.getElementById("distance").textContent = Math.floor(drone.distanceTravelled);
     document.getElementById("missed").textContent = missedDeliveries;
 
-    ctx.fillText("HUD");
-    ctx.fillText("")
-    ctx.fillText("High Score: " + highScore, 20, 60);
-
     if (gameState === "playing") {
 
         drone.moveDrone();
@@ -640,7 +640,7 @@ function animate() {
                 messageTimer = 60;
                 
                 //Check if all clinics recieved their supplies including the the clinics that missed
-                if(completedDeliveries === clinics.length - missedDeliveries)
+                if(completedDeliveries === clinics.length)
                 {
                     gameState = "win";
                     showWinScreen();
