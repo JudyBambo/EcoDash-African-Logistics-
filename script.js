@@ -551,7 +551,6 @@ function animate() {
     document.getElementById("missed").textContent = missedDeliveries;
 
     if (gameState === "playing") {
-
         drone.moveDrone();
         drone.drawDrone();
 
