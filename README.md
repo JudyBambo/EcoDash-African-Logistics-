@@ -28,61 +28,58 @@ The player must:
 
 ---
 
-##  Game World
+## Game World
 
 The game takes place in a simulated Kenyan environment containing:
 
-* A central medical supply depot
-* Six medical clinics
-* Solar charging stations
-* Trees
-* Flying birds
-* A controllable medical drone
+- A central medical supply depot
+- Six medical clinics
+- Solar charging stations
+- Trees
+- Flying birds
+- A controllable medical drone
 
 ### Clinics
 
 The six clinics in the game are:
 
-* Oloshaiki
-* Inkoiriento
-* Nyamokenye
-* Maugo
-* Kimuka
-* Lengusaka
+- Oloshaiki
+- Inkoiriento
+- Nyamokenye
+- Maugo
+- Kimuka
+- Lengusaka
 
 Only one clinic requests supplies at a time.
 
 ---
 
-## 🎮 Game Controls
+## Game Controls
 
-⬆️ Arrow Up   ---- Move drone upward   
-⬇️ Arrow Down ---- Move drone downward 
-⬅️ Arrow Left ---- Move drone left     
-➡️ Arrow Right --- Move drone right    
-Pause Button   | Pause the game      
-Resume Button  | Continue the game   
-Restart Game   | Reset the game      
+Arrow Up ---- Move drone upward  
+Arrow Down ---- Move drone downward
+Arrow Left ---- Move drone left  
+Arrow Right --- Move drone right
 
 ---
 
-##  Clinic System
+## Clinic System
 
 Clinics have different visual states depending on their status.
 
-###  White
+### White
 
 The clinic has not yet requested supplies.
 
-###  Yellow
+### Yellow
 
 The clinic is currently requesting medical supplies.
 
-###  Black
+### Black
 
 The delivery was missed.
 
-###  Grey
+### Grey
 
 The delivery was successfully completed.
 
@@ -90,7 +87,7 @@ A red medical cross is displayed on clinics that have not missed their delivery.
 
 ---
 
-##  Medical Supply System
+## Medical Supply System
 
 The drone must first visit the depot before it can deliver supplies.
 
@@ -114,8 +111,8 @@ The battery decreases while the drone is moving.
 
 Collisions also reduce the battery:
 
-* Tree collision: -10 battery
-* Bird collision: -5 battery
+- Tree collision: -10 battery
+- Bird collision: -5 battery
 
 If the battery reaches **0%**, the game ends.
 
@@ -123,7 +120,7 @@ The drone can recharge by visiting one of the solar stations.
 
 ---
 
-##  Solar Charging Stations
+## Solar Charging Stations
 
 Solar stations are positioned around the game world.
 
@@ -137,7 +134,7 @@ The maximum battery level is:
 
 ---
 
-##  Obstacles
+## Obstacles
 
 The game contains two types of moving/static obstacles.
 
@@ -147,10 +144,10 @@ Trees are stationary obstacles positioned throughout the game world.
 
 When the drone collides with a tree:
 
-* The drone is moved backwards.
-* Its velocity is stopped.
-* Battery power is reduced.
-* A collision message is displayed.
+- The drone is moved backwards.
+- Its velocity is stopped.
+- Battery power is reduced.
+- A collision message is displayed.
 
 ### Birds
 
@@ -158,14 +155,14 @@ Birds move horizontally across the game world.
 
 When the drone collides with a bird:
 
-* The drone is moved backwards.
-* Its velocity is stopped.
-* Battery power is reduced.
-* A collision message is displayed.
+- The drone is moved backwards.
+- Its velocity is stopped.
+- Battery power is reduced.
+- A collision message is displayed.
 
 ---
 
-##  Collision Detection
+## Collision Detection
 
 Collision detection is used to determine whether the drone has touched an obstacle, depot, solar station, or clinic.
 
@@ -183,7 +180,7 @@ For the depot and solar stations, rectangular collision detection is used.
 
 ---
 
-## 📐 Mathematical Model
+## Mathematical Model
 
 Mathematics is used in several parts of the simulation.
 
@@ -233,7 +230,7 @@ The distance formula is also used when checking collisions between the drone and
 
 ---
 
-##  Object-Oriented Programming
+## Object-Oriented Programming
 
 The game uses JavaScript classes to represent different objects.
 
@@ -241,78 +238,78 @@ The game uses JavaScript classes to represent different objects.
 
 Responsible for:
 
-* Drone position
-* Drone movement
-* Velocity
-* Acceleration
-* Battery
-* Supplies
-* Distance travelled
-* Drawing the drone
+- Drone position
+- Drone movement
+- Velocity
+- Acceleration
+- Battery
+- Supplies
+- Distance travelled
+- Drawing the drone
 
 ### `Clinic`
 
 Responsible for:
 
-* Clinic name
-* Clinic position
-* Request status
-* Delivery status
-* Delivery timer
-* Drawing the clinic
-* Detecting missed deliveries
+- Clinic name
+- Clinic position
+- Request status
+- Delivery status
+- Delivery timer
+- Drawing the clinic
+- Detecting missed deliveries
 
 ### `Depot`
 
 Responsible for:
 
-* Depot position
-* Depot dimensions
-* Drawing the medical supply depot
+- Depot position
+- Depot dimensions
+- Drawing the medical supply depot
 
 ### `SolarStation`
 
 Responsible for:
 
-* Solar station position
-* Solar station dimensions
-* Drawing the charging station
+- Solar station position
+- Solar station dimensions
+- Drawing the charging station
 
 ### `Tree`
 
 Responsible for:
 
-* Tree position
-* Tree size
-* Drawing the tree
+- Tree position
+- Tree size
+- Drawing the tree
 
 ### `Bird`
 
 Responsible for:
 
-* Bird position
-* Bird movement
-* Bird direction
-* Drawing the bird
+- Bird position
+- Bird movement
+- Bird direction
+- Drawing the bird
 
 ---
 
-##  Technologies Used
+## Technologies Used
 
 The project was developed using:
 
-* **HTML5**
-* **CSS3**
-* **JavaScript ES6+**
-* **HTML5 Canvas**
-* **Web Audio API**
-* **Local Storage**
+- **HTML5**
+- **CSS3**
+- **JavaScript ES6+**
+- **HTML5 Canvas**
+- **Web Audio API**
+- **Local Storage**
 
 No external game engines or JavaScript frameworks are used.
 
 ---
 
-##  Game States
+## Game States
 
 The game uses different states to control what is happening in the game.
 
@@ -332,8 +329,8 @@ The game stops updating until the player selects **Resume**.
 
 The game ends when:
 
-* The drone's battery reaches 0%, or
-* Three deliveries have been missed.
+- The drone's battery reaches 0%, or
+- Three deliveries have been missed.
 
 The final score and delivery statistics are displayed.
 
@@ -343,7 +340,7 @@ The game enters the win state after all required clinic deliveries have been suc
 
 ---
 
-##  Scoring System
+## Scoring System
 
 The player receives points for successfully delivering medical supplies.
 
@@ -359,35 +356,35 @@ The game also stores a high score using the browser's `localStorage`.
 
 ---
 
-## 📊 HUD
+## HUD
 
 The Heads-Up Display provides information about the current game.
 
 It displays:
 
-* **Score**
-* **Battery**
-* **Deliveries completed**
-* **Distance travelled**
-* **Missed deliveries**
+- **Score**
+- **Battery**
+- **Deliveries completed**
+- **Distance travelled**
+- **Missed deliveries**
 
 This allows the player to monitor their progress while playing.
 
 ---
 
-##  Sound
+## Sound
 
 The game includes background music that starts when the player begins the game.
 
 The music pauses when:
 
-* The game is paused.
-* The game ends.
-* The mission is completed.
+- The game is paused.
+- The game ends.
+- The mission is completed.
 
 ---
 
-## ▶️ How to Run the Game
+## How to Run the Game
 
 ### Option 1: Open the HTML file
 
@@ -403,7 +400,7 @@ Make sure the project files maintain their folder structure, especially the audi
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```text
 Drone-Medical-Delivery/
@@ -420,13 +417,13 @@ Drone-Medical-Delivery/
 
 Contains the structure of the game, including:
 
-* Canvas
-* HUD
-* Buttons
-* Start screen
-* Pause screen
-* Game-over screen
-* Mission-complete screen
+- Canvas
+- HUD
+- Buttons
+- Start screen
+- Pause screen
+- Game-over screen
+- Mission-complete screen
 
 ### `style.css`
 
@@ -436,20 +433,20 @@ Controls the appearance and layout of the game interface.
 
 Contains the game logic, including:
 
-* Classes
-* Drone movement
-* Keyboard controls
-* Collision detection
-* Clinic requests
-* Deliveries
-* Battery management
-* Scoring
-* Game states
-* Animation
+- Classes
+- Drone movement
+- Keyboard controls
+- Collision detection
+- Clinic requests
+- Deliveries
+- Battery management
+- Scoring
+- Game states
+- Animation
 
 ---
 
-##  Game Loop
+## Game Loop
 
 The game uses `requestAnimationFrame()` to continuously update the game.
 
@@ -470,13 +467,11 @@ This creates the continuous animation required for the simulation.
 
 ---
 
-
 ---
 
-## 👩‍💻 Author
+## Author
 
 **Mamonare Judy Bambo**
 
 Bachelor of Information Technology
 Web Design and Development
-
