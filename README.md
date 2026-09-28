@@ -409,8 +409,11 @@ Drone-Medical-Delivery/
 ├── style.css
 ├── script.js
 │
-└── Audio/
-    └── Background_Sound.mp3
+│── Audio/
+│    └── Background_Sound.mp3
+└── Images/
+    │── Background_Image.jpg
+    └── Background_Image.jpg
 ```
 
 ### `index.html`
