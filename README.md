@@ -1,9 +1,8 @@
 # EcoDash-African-Logistics-
-# 🚁 Drone Medical Delivery - Kenya
 
-## 📖 Project Description
+## Project Description
 
-**Drone Medical Delivery - Kenya** is a 2D interactive simulation game developed using **HTML5 Canvas, Vanilla JavaScript (ES6+), and CSS3**.
+**EcoDash** is a 2D interactive simulation game developed using **HTML5 Canvas, Vanilla JavaScript (ES6+), and CSS3**.
 
 The player controls a medical delivery drone that must collect medical supplies from a central depot and deliver them to clinics that request assistance. The player must manage the drone's battery, avoid obstacles such as trees and birds, and complete the required deliveries before too many deliveries are missed.
 
@@ -11,7 +10,7 @@ The game is designed to demonstrate programming concepts including **Object-Orie
 
 ---
 
-## 🎯 Game Objective
+## Game Objective
 
 The objective of the game is to successfully deliver medical supplies to the clinics requesting assistance.
 
@@ -29,7 +28,7 @@ The player must:
 
 ---
 
-## 🗺️ Game World
+##  Game World
 
 The game takes place in a simulated Kenyan environment containing:
 
@@ -67,23 +66,23 @@ Restart Game   | Reset the game
 
 ---
 
-## 🏥 Clinic System
+##  Clinic System
 
 Clinics have different visual states depending on their status.
 
-### ⚪ White
+###  White
 
 The clinic has not yet requested supplies.
 
-### 🟡 Yellow
+###  Yellow
 
 The clinic is currently requesting medical supplies.
 
-### ⚫ Black
+###  Black
 
 The delivery was missed.
 
-### ⚪ Grey
+###  Grey
 
 The delivery was successfully completed.
 
@@ -91,7 +90,7 @@ A red medical cross is displayed on clinics that have not missed their delivery.
 
 ---
 
-## 📦 Medical Supply System
+##  Medical Supply System
 
 The drone must first visit the depot before it can deliver supplies.
 
@@ -107,7 +106,7 @@ After successfully delivering supplies, the drone must return to the depot to co
 
 ---
 
-## 🔋 Battery System
+## Battery System
 
 The drone starts with a battery level of **100%**.
 
@@ -124,7 +123,7 @@ The drone can recharge by visiting one of the solar stations.
 
 ---
 
-## ☀️ Solar Charging Stations
+##  Solar Charging Stations
 
 Solar stations are positioned around the game world.
 
@@ -138,7 +137,7 @@ The maximum battery level is:
 
 ---
 
-## 🌳 Obstacles
+##  Obstacles
 
 The game contains two types of moving/static obstacles.
 
@@ -166,7 +165,7 @@ When the drone collides with a bird:
 
 ---
 
-## 💥 Collision Detection
+##  Collision Detection
 
 Collision detection is used to determine whether the drone has touched an obstacle, depot, solar station, or clinic.
 
@@ -234,7 +233,7 @@ The distance formula is also used when checking collisions between the drone and
 
 ---
 
-## 🧱 Object-Oriented Programming
+##  Object-Oriented Programming
 
 The game uses JavaScript classes to represent different objects.
 
@@ -298,7 +297,7 @@ Responsible for:
 
 ---
 
-## 🎨 Technologies Used
+##  Technologies Used
 
 The project was developed using:
 
@@ -313,7 +312,7 @@ No external game engines or JavaScript frameworks are used.
 
 ---
 
-## 🖥️ Game States
+##  Game States
 
 The game uses different states to control what is happening in the game.
 
@@ -344,7 +343,7 @@ The game enters the win state after all required clinic deliveries have been suc
 
 ---
 
-## 🏆 Scoring System
+##  Scoring System
 
 The player receives points for successfully delivering medical supplies.
 
@@ -376,7 +375,7 @@ This allows the player to monitor their progress while playing.
 
 ---
 
-## 🔊 Sound
+##  Sound
 
 The game includes background music that starts when the player begins the game.
 
@@ -450,7 +449,7 @@ Contains the game logic, including:
 
 ---
 
-## 🔄 Game Loop
+##  Game Loop
 
 The game uses `requestAnimationFrame()` to continuously update the game.
 
@@ -471,23 +470,6 @@ This creates the continuous animation required for the simulation.
 
 ---
 
-## 🚧 Future Improvements
-
-Possible future improvements include:
-
-* More detailed drone graphics
-* More realistic trees and birds
-* Additional environmental objects
-* Touch and mouse controls
-* Improved collision effects
-* More sound effects
-* Wind and weather effects
-* A minimap
-* Additional delivery missions
-* Improved mobile responsiveness
-* More advanced scoring
-* Additional Kenyan locations
-* Improved visual feedback for deliveries
 
 ---
 
@@ -498,5 +480,3 @@ Possible future improvements include:
 Bachelor of Information Technology
 Web Design and Development
 
-This project was developed as part of a programming and interactive simulation project using HTML5 Canvas and JavaScript.
- 
