@@ -543,12 +543,11 @@ document.addEventListener("keyup", function (event) {
 //ANIMATE FUNCTION
 function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
     //UPDATE HUD
     document.getElementById("score").textContent = score;
     document.getElementById("battery").textContent = Math.floor(drone.battery) + "%";
     document.getElementById("delivered").textContent = completedDeliveries;
-    document.getElementById("distance").textContent = Math.floor(drone.distanceTravelled);
+    document.getElementById("distance").textContent = Math.floor(drone.distanceTravelled/100) + "km";
     document.getElementById("missed").textContent = missedDeliveries;
 
     if (gameState === "playing") {
@@ -558,8 +557,8 @@ function animate() {
 
         //CHECKS IF THERES MESSEGE TIMER SET, DISPLY THE MESSAGE AND REDUCE THE TIMER
         if (messageTimer > 0) {
-
             ctx.fillStyle = "red";
+            ctx.fillText(gameMessage, 50, 100);
             messageTimer--;
         }
 
